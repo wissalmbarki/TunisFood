@@ -10,7 +10,7 @@ public class Main {
         Client client = new Client("Wissal Mbarki", "wissal@tunisfood.com", "hash123", "Tunis Centre");
         System.out.println("--- Auth ---");
         client.seConnecter("wissal@tunisfood.com", "mdp");
-        client.mettreAJourProfil("Wissal Ben Ali", "wissal.benali@tunisfood.com");
+        client.mettreAJourProfil("Wissal Ben Ali", "wissal.mbarki@tunisfood.com");
         System.out.println(client);
 
         // Test Admin
