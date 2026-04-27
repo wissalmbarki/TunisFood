@@ -1,47 +1,73 @@
-package com.tunisfood.models;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
-public abstract class Utilisateur {
-    private String nom;
+public class Utilisateur {
+
     private String email;
     private String motDePasseHash;
-    private String role;
+    private int tentativesEchouees = 0;
+    private long bloqueJusqua = 0; // timestamp en millisecondes
 
-    public Utilisateur() {}
-    public Utilisateur(String nom, String email, String motDePasseHash, String role) {
-        this.nom = nom;
+    public Utilisateur(String email, String motDePasseHash) {
         this.email = email;
         this.motDePasseHash = motDePasseHash;
-        this.role = role;
     }
 
-    // Getters / Setters
-    public String getNom() { return nom; }
-    public void setNom(String nom) { this.nom = nom; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getMotDePasseHash() { return motDePasseHash; }
-    public void setMotDePasseHash(String motDePasseHash) { this.motDePasseHash = motDePasseHash; }
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public boolean seConnecter(String email, String motDePasse) {
 
-    // Méthodes métier (provisoires Sprint 1)
-    public boolean seConnecter(String email, String mdp) {
-        System.out.println("Connexion tentée pour " + email);
-        return true; // provisoire
+        long maintenant = System.currentTimeMillis();
+
+        // Vérifier si le compte est bloqué
+        if (maintenant < bloqueJusqua) {
+            System.out.println("Compte bloqué 5 minutes");
+            return false;
+        }
+
+        // Vérifier l'email
+        if (!this.email.equals(email)) {
+            System.out.println("Email incorrect");
+            return false;
+        }
+
+        // Hasher le mot de passe fourni
+        String hashEntre = hashSHA256(motDePasse);
+
+        // Vérifier le mot de passe
+        if (this.motDePasseHash.equals(hashEntre)) {
+            System.out.println("Connexion réussie !");
+            tentativesEchouees = 0; // reset
+            return true;
+        } else {
+            tentativesEchouees++;
+            System.out.println("Mot de passe incorrect");
+
+            if (tentativesEchouees >= 3) {
+                bloqueJusqua = maintenant + (5 * 60 * 1000); // 5 minutes
+                System.out.println("Compte bloqué 5 minutes");
+            }
+
+            return false;
+        }
     }
 
-    public void seDeconnecter() {
-        System.out.println("Déconnexion");
-    }
+    // Méthode pour hasher avec SHA-256
+    private String hashSHA256(String motDePasse) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(motDePasse.getBytes());
 
-    public void mettreAJourProfil(String nom, String email) {
-        this.nom = nom;
-        this.email = email;
-        System.out.println("Profil mis à jour");
-    }
+            StringBuilder hexString = new StringBuilder();
 
-    @Override
-    public String toString() {
-        return role + " : " + nom + " (" + email + ")";
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Erreur lors du hashage SHA-256", e);
+        }
     }
 }
