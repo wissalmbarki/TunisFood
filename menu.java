@@ -1,4 +1,13 @@
-public Menu() {
+
+/**
+ * Fonctionnalité 3 : Menu & Photos des plats
+ * Auteur : Molka (Étudiant C)
+ * US-07 : Afficher la liste des plats
+ * US-08 : Filtrer par catégorie
+ * US-09 : Voir les photos des plats
+ * US-10 : Filtrer par prix maximum
+ * Lien Figma : https://www.figma.com/make/EbKpRlfaRUJ6YpujbluQ5i/TunisFood-Mobile-UI-Kit
+ */public Menu() {
     plats.add(new Plat(1, "Couscous Tunisien", "Couscous au poulet et légumes de saison", 18.500, "Plat Principal", 30));
     plats.add(new Plat(2, "Brik à l'oeuf", "Brik croustillant fourré à l'oeuf et thon", 4.500, "Entrée", 10));
     plats.add(new Plat(3, "Lablabi", "Soupe de pois chiches épicée, spécialité de Tunis", 6.000, "Soupe", 15));
